@@ -1,65 +1,41 @@
-/**
- * \file
+/*
+ * Instance header file for ATSAMD51P20A
  *
- * \brief Instance description for GCLK
+ * Copyright (c) 2023 Microchip Technology Inc. and its subsidiaries.
  *
- * Copyright (c) 2018 Microchip Technology Inc.
+ * Subject to your compliance with these terms, you may use Microchip software and any derivatives
+ * exclusively with Microchip products. It is your responsibility to comply with third party license
+ * terms applicable to your use of third party software (including open source software) that may
+ * accompany Microchip software.
  *
- * \asf_license_start
+ * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY,
+ * APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND
+ * FITNESS FOR A PARTICULAR PURPOSE.
  *
- * \page License
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License.
- * You may obtain a copy of the Licence at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an AS IS BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * \asf_license_stop
+ * IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, INCIDENTAL OR CONSEQUENTIAL
+ * LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF
+ * MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE FULLEST EXTENT
+ * ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT
+ * EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  *
  */
 
-#ifndef _SAMD11_GCLK_INSTANCE_
-#define _SAMD11_GCLK_INSTANCE_
+/* file generated from device description version 2023-03-17T09:49:46Z */
+#ifndef _SAMD51_GCLK_INSTANCE_
+#define _SAMD51_GCLK_INSTANCE_
 
-/* ========== Register definition for GCLK peripheral ========== */
-#if (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
-#define REG_GCLK_CTRL              (0x40000C00) /**< \brief (GCLK) Control */
-#define REG_GCLK_STATUS            (0x40000C01) /**< \brief (GCLK) Status */
-#define REG_GCLK_CLKCTRL           (0x40000C02) /**< \brief (GCLK) Generic Clock Control */
-#define REG_GCLK_GENCTRL           (0x40000C04) /**< \brief (GCLK) Generic Clock Generator Control */
-#define REG_GCLK_GENDIV            (0x40000C08) /**< \brief (GCLK) Generic Clock Generator Division */
-#else
-#define REG_GCLK_CTRL              (*(RwReg8 *)0x40000C00UL) /**< \brief (GCLK) Control */
-#define REG_GCLK_STATUS            (*(RoReg8 *)0x40000C01UL) /**< \brief (GCLK) Status */
-#define REG_GCLK_CLKCTRL           (*(RwReg16*)0x40000C02UL) /**< \brief (GCLK) Generic Clock Control */
-#define REG_GCLK_GENCTRL           (*(RwReg  *)0x40000C04UL) /**< \brief (GCLK) Generic Clock Generator Control */
-#define REG_GCLK_GENDIV            (*(RwReg  *)0x40000C08UL) /**< \brief (GCLK) Generic Clock Generator Division */
-#endif /* (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
-/* ========== Instance parameters for GCLK peripheral ========== */
-#define GCLK_GENDIV_BITS            16      
-#define GCLK_GEN_NUM                6        // Number of Generic Clock Generators
-#define GCLK_GEN_NUM_MSB            5        // Number of Generic Clock Generators - 1
-#define GCLK_GEN_SOURCE_NUM_MSB     8        // Number of Generic Clock Sources - 1
-#define GCLK_NUM                    24       // Number of Generic Clock Users
-#define GCLK_SOURCE_DFLL48M         7       
-#define GCLK_SOURCE_DPLL96M         8       
-#define GCLK_SOURCE_GCLKGEN1        2       
-#define GCLK_SOURCE_GCLKIN          1       
-#define GCLK_SOURCE_NUM             9        // Number of Generic Clock Sources
-#define GCLK_SOURCE_OSCULP32K       3       
-#define GCLK_SOURCE_OSC8M           6       
-#define GCLK_SOURCE_OSC32K          4       
-#define GCLK_SOURCE_XOSC            0       
-#define GCLK_SOURCE_XOSC32K         5       
+/* ========== Instance Parameter definitions for GCLK peripheral ========== */
+#define GCLK_GENCTRL0_RESETVALUE                 (106)      /* Default specific reset value for generator 0 */
+#define GCLK_GENDIV_BITS                         (16)       
+#define GCLK_GEN_BITS                            (4)        
+#define GCLK_GEN_NUM                             (12)       /* Number of Generic Clock Generators */
+#define GCLK_GEN_NUM_MSB                         (11)       /* Number of Generic Clock Generators - 1 */
+#define GCLK_GEN_SOURCE_NUM_MSB                  (8)        /* Number of Generic Clock Sources - 1 */
+#define GCLK_INSTANCE_ID                         (7)        /* Instance index for GCLK */
+#define GCLK_IO_NUM                              (8)        /* Number of Generic Clock I/Os */
+#define GCLK_NUM                                 (48)       /* Number of Generic Clock Users */
+#define GCLK_SOURCE_BITS                         (4)        
+#define GCLK_SOURCE_NUM                          (9)        /* Number of Generic Clock Sources */
 
-#endif /* _SAMD11_GCLK_INSTANCE_ */
+#endif /* _SAMD51_GCLK_INSTANCE_ */

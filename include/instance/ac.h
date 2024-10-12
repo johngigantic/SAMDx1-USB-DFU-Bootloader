@@ -1,73 +1,37 @@
-/**
- * \file
+/*
+ * Instance header file for ATSAMD51P20A
  *
- * \brief Instance description for AC
+ * Copyright (c) 2023 Microchip Technology Inc. and its subsidiaries.
  *
- * Copyright (c) 2018 Microchip Technology Inc.
+ * Subject to your compliance with these terms, you may use Microchip software and any derivatives
+ * exclusively with Microchip products. It is your responsibility to comply with third party license
+ * terms applicable to your use of third party software (including open source software) that may
+ * accompany Microchip software.
  *
- * \asf_license_start
+ * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY,
+ * APPLY TO THIS SOFTWARE, INCLUDING ANY IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND
+ * FITNESS FOR A PARTICULAR PURPOSE.
  *
- * \page License
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License.
- * You may obtain a copy of the Licence at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an AS IS BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * \asf_license_stop
+ * IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, INCIDENTAL OR CONSEQUENTIAL
+ * LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF
+ * MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO THE FULLEST EXTENT
+ * ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT
+ * EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
  *
  */
 
-#ifndef _SAMD11_AC_INSTANCE_
-#define _SAMD11_AC_INSTANCE_
+/* file generated from device description version 2023-03-17T09:49:46Z */
+#ifndef _SAMD51_AC_INSTANCE_
+#define _SAMD51_AC_INSTANCE_
 
-/* ========== Register definition for AC peripheral ========== */
-#if (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__))
-#define REG_AC_CTRLA               (0x42002400) /**< \brief (AC) Control A */
-#define REG_AC_CTRLB               (0x42002401) /**< \brief (AC) Control B */
-#define REG_AC_EVCTRL              (0x42002402) /**< \brief (AC) Event Control */
-#define REG_AC_INTENCLR            (0x42002404) /**< \brief (AC) Interrupt Enable Clear */
-#define REG_AC_INTENSET            (0x42002405) /**< \brief (AC) Interrupt Enable Set */
-#define REG_AC_INTFLAG             (0x42002406) /**< \brief (AC) Interrupt Flag Status and Clear */
-#define REG_AC_STATUSA             (0x42002408) /**< \brief (AC) Status A */
-#define REG_AC_STATUSB             (0x42002409) /**< \brief (AC) Status B */
-#define REG_AC_STATUSC             (0x4200240A) /**< \brief (AC) Status C */
-#define REG_AC_WINCTRL             (0x4200240C) /**< \brief (AC) Window Control */
-#define REG_AC_COMPCTRL0           (0x42002410) /**< \brief (AC) Comparator Control 0 */
-#define REG_AC_COMPCTRL1           (0x42002414) /**< \brief (AC) Comparator Control 1 */
-#define REG_AC_SCALER0             (0x42002420) /**< \brief (AC) Scaler 0 */
-#define REG_AC_SCALER1             (0x42002421) /**< \brief (AC) Scaler 1 */
-#else
-#define REG_AC_CTRLA               (*(RwReg8 *)0x42002400UL) /**< \brief (AC) Control A */
-#define REG_AC_CTRLB               (*(WoReg8 *)0x42002401UL) /**< \brief (AC) Control B */
-#define REG_AC_EVCTRL              (*(RwReg16*)0x42002402UL) /**< \brief (AC) Event Control */
-#define REG_AC_INTENCLR            (*(RwReg8 *)0x42002404UL) /**< \brief (AC) Interrupt Enable Clear */
-#define REG_AC_INTENSET            (*(RwReg8 *)0x42002405UL) /**< \brief (AC) Interrupt Enable Set */
-#define REG_AC_INTFLAG             (*(RwReg8 *)0x42002406UL) /**< \brief (AC) Interrupt Flag Status and Clear */
-#define REG_AC_STATUSA             (*(RoReg8 *)0x42002408UL) /**< \brief (AC) Status A */
-#define REG_AC_STATUSB             (*(RoReg8 *)0x42002409UL) /**< \brief (AC) Status B */
-#define REG_AC_STATUSC             (*(RoReg8 *)0x4200240AUL) /**< \brief (AC) Status C */
-#define REG_AC_WINCTRL             (*(RwReg8 *)0x4200240CUL) /**< \brief (AC) Window Control */
-#define REG_AC_COMPCTRL0           (*(RwReg  *)0x42002410UL) /**< \brief (AC) Comparator Control 0 */
-#define REG_AC_COMPCTRL1           (*(RwReg  *)0x42002414UL) /**< \brief (AC) Comparator Control 1 */
-#define REG_AC_SCALER0             (*(RwReg8 *)0x42002420UL) /**< \brief (AC) Scaler 0 */
-#define REG_AC_SCALER1             (*(RwReg8 *)0x42002421UL) /**< \brief (AC) Scaler 1 */
-#endif /* (defined(__ASSEMBLY__) || defined(__IAR_SYSTEMS_ASM__)) */
 
-/* ========== Instance parameters for AC peripheral ========== */
-#define AC_CMP_NUM                  2        // Number of comparators
-#define AC_GCLK_ID_ANA              21       // Index of Generic Clock for analog
-#define AC_GCLK_ID_DIG              20       // Index of Generic Clock for digital
-#define AC_NUM_CMP                  2       
-#define AC_PAIRS                    1        // Number of pairs of comparators
+/* ========== Instance Parameter definitions for AC peripheral ========== */
+#define AC_COMPCTRL_MUXNEG_OPAMP                 (7)        /* OPAMP selection for MUXNEG */
+#define AC_GCLK_ID                               (32)       /* Index of Generic Clock */
+#define AC_IMPLEMENTS_VDBLR                      (0)        /* VDoubler implemented ? */
+#define AC_INSTANCE_ID                           (72)       /* Instance index for AC */
+#define AC_NUM_CMP                               (2)        /* Number of comparators */
+#define AC_PAIRS                                 (1)        /* Number of pairs of comparators */
+#define AC_SPEED_LEVELS                          (2)        /* Number of speed values */
 
-#endif /* _SAMD11_AC_INSTANCE_ */
+#endif /* _SAMD51_AC_INSTANCE_ */
