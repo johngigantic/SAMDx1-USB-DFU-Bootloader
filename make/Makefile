@@ -36,7 +36,7 @@ SRCS += \
   ../usb_descriptors.c
 
 DEFINES += \
-  -D__SAMD11D14AM__ \
+  -D__SAMD51N20A__ \
   -DDONT_USE_CMSIS_INIT \
   -DSTARTUP_FROM_RESET
 
