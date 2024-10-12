@@ -20,12 +20,12 @@ CFLAGS += -Wno-address-of-packed-member
 CFLAGS += -fno-diagnostics-show-caret
 CFLAGS += -fdata-sections -ffunction-sections
 CFLAGS += -funsigned-char -funsigned-bitfields
-CFLAGS += -mcpu=cortex-m0plus -mthumb
+CFLAGS += -mcpu=cortex-m4 -mthumb
 CFLAGS += -MD -MP -MT $(BUILD)/$(*F).o -MF $(BUILD)/$(@F).d
 
-LDFLAGS += -mcpu=cortex-m0plus -mthumb
+LDFLAGS += -mcpu=cortex-m4 -mthumb
 LDFLAGS += -Wl,--gc-sections
-LDFLAGS += -Wl,--script=../linker/samd11d14.ld
+LDFLAGS += -Wl,--script=../linker/samd51n20.ld
 
 INCLUDES += \
   -I../include \

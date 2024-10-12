@@ -39,7 +39,7 @@ __STACKSIZE__ = 256;
 MEMORY
 {
   flash (rx) : ORIGIN = 0x00000000, LENGTH = 0x400 /* 1k */
-  ram  (rwx) : ORIGIN = 0x20000000, LENGTH = 0x1000 /* 4k */
+  ram  (rwx) : ORIGIN = 0x20000000, LENGTH = 0x40000 /* 256k */
 }
 
 __top_flash = ORIGIN(flash) + LENGTH(flash);
