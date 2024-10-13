@@ -40,7 +40,6 @@ NOTES:
 #include <string.h>
 #include <sam.h>
 #include "usb.h"
-#include "nvm_data.h"
 #include "usb_descriptors.h"
 
 /*- Definitions -------------------------------------------------------------*/
@@ -52,8 +51,8 @@ NOTES:
 /*- Types -------------------------------------------------------------------*/
 typedef struct
 {
-    UsbDeviceDescBank  out;
-    UsbDeviceDescBank  in;
+    usb_device_desc_bank_registers_t  out;
+    usb_device_desc_bank_registers_t  in;
 } udc_mem_t;
 
 /*- Variables ---------------------------------------------------------------*/
@@ -74,14 +73,14 @@ static uint32_t udc_ctrl_out_buf[16];
 static void __attribute__((noinline)) udc_control_send(const uint32_t *data, uint32_t size)
 {
   /* USB peripheral *only* reads valid data from 32-bit aligned RAM locations */
-  udc_mem[0].in.ADDR.reg = (uint32_t)data;
+  udc_mem[0].in.USB_ADDR = (uint32_t)data;
 
-  udc_mem[0].in.PCKSIZE.reg = USB_DEVICE_PCKSIZE_BYTE_COUNT(size) | USB_DEVICE_PCKSIZE_MULTI_PACKET_SIZE(0) | USB_DEVICE_PCKSIZE_SIZE(3 /*64 Byte*/);
+  udc_mem[0].in.USB_PCKSIZE = USB_DEVICE_PCKSIZE_BYTE_COUNT(size) | USB_DEVICE_PCKSIZE_MULTI_PACKET_SIZE(0) | USB_DEVICE_PCKSIZE_SIZE(3 /*64 Byte*/);
 
-  USB_REGS->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT1;
-  USB_REGS->DEVICE.DeviceEndpoint[0].EPSTATUSSET.bit.BK1RDY = 1;
+  USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPINTFLAG = USB_DEVICE_EPINTFLAG_TRCPT1(1);
+  USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPSTATUSSET = USB_DEVICE_EPSTATUSSET_BK1RDY(1);
 
-  while (0 == USB_REGS->DEVICE.DeviceEndpoint[0].EPINTFLAG.bit.TRCPT1);
+  while (0 == (USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPINTFLAG & USB_DEVICE_EPINTFLAG_TRCPT1(1)));
 }
 
 //-----------------------------------------------------------------------------
@@ -95,52 +94,52 @@ static void __attribute__((noinline)) USB_Service(void)
 {
   static uint32_t dfu_addr;
 
-  if (USB_REGS->DEVICE.INTFLAG.bit.EORST) /* End Of Reset */
+  if (USB_REGS->DEVICE.USB_INTFLAG & USB_DEVICE_INTFLAG_EORST(1)) /* End Of Reset */
   {
-    USB_REGS->DEVICE.INTFLAG.reg = USB_DEVICE_INTFLAG_EORST;
-    USB_REGS->DEVICE.DADD.reg = USB_DEVICE_DADD_ADDEN;
+    USB_REGS->DEVICE.USB_INTFLAG = USB_DEVICE_INTFLAG_EORST(1);
+    USB_REGS->DEVICE.USB_DADD = USB_DEVICE_DADD_ADDEN(1);
 
-    USB_REGS->DEVICE.DeviceEndpoint[0].EPCFG.reg = USB_DEVICE_EPCFG_EPTYPE0(1 /*CONTROL*/) | USB_DEVICE_EPCFG_EPTYPE1(1 /*CONTROL*/);
-    USB_REGS->DEVICE.DeviceEndpoint[0].EPSTATUSSET.bit.BK0RDY = 1;
-    USB_REGS->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.bit.BK1RDY = 1;
+    USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPCFG = USB_DEVICE_EPCFG_EPTYPE0(1 /*CONTROL*/) | USB_DEVICE_EPCFG_EPTYPE1(1 /*CONTROL*/);
+    USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPSTATUSSET = USB_DEVICE_EPSTATUSSET_BK0RDY(1);
+    USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPSTATUSCLR = USB_DEVICE_EPSTATUSCLR_BK1RDY(1);
 
-    udc_mem[0].in.ADDR.reg = (uint32_t)udc_ctrl_in_buf;
-    udc_mem[0].in.PCKSIZE.reg = USB_DEVICE_PCKSIZE_BYTE_COUNT(0) | USB_DEVICE_PCKSIZE_MULTI_PACKET_SIZE(0) | USB_DEVICE_PCKSIZE_SIZE(3 /*64 Byte*/);
+    udc_mem[0].in.USB_ADDR = (uint32_t)udc_ctrl_in_buf;
+    udc_mem[0].in.USB_PCKSIZE = USB_DEVICE_PCKSIZE_BYTE_COUNT(0) | USB_DEVICE_PCKSIZE_MULTI_PACKET_SIZE(0) | USB_DEVICE_PCKSIZE_SIZE(3 /*64 Byte*/);
 
-    udc_mem[0].out.ADDR.reg = (uint32_t)udc_ctrl_out_buf;
-    udc_mem[0].out.PCKSIZE.reg = USB_DEVICE_PCKSIZE_BYTE_COUNT(64) | USB_DEVICE_PCKSIZE_MULTI_PACKET_SIZE(0) | USB_DEVICE_PCKSIZE_SIZE(3 /*64 Byte*/);
+    udc_mem[0].out.USB_ADDR = (uint32_t)udc_ctrl_out_buf;
+    udc_mem[0].out.USB_PCKSIZE = USB_DEVICE_PCKSIZE_BYTE_COUNT(64) | USB_DEVICE_PCKSIZE_MULTI_PACKET_SIZE(0) | USB_DEVICE_PCKSIZE_SIZE(3 /*64 Byte*/);
 
-    USB_REGS->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.bit.BK0RDY = 1;
+    USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPSTATUSCLR = USB_DEVICE_EPSTATUSCLR_BK0RDY(1);
   }
 
-  if (USB_REGS->DEVICE.DeviceEndpoint[0].EPINTFLAG.bit.TRCPT0) /* Transmit Complete 0 */
+  if (USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPINTFLAG & USB_DEVICE_EPINTFLAG_TRCPT0(1)) /* Transmit Complete 0 */
   {
     if (dfu_addr)
     {
       if (0 == ((dfu_addr >> 6) & 0x3))
       {
-        NVMCTRL->ADDR.reg = dfu_addr >> 1;
-        NVMCTRL->CTRLA.reg = NVMCTRL_CTRLA_CMDEX_KEY | NVMCTRL_CTRLA_CMD(NVMCTRL_CTRLA_CMD_ER);
-        while (!NVMCTRL->INTFLAG.bit.READY);
+        NVMCTRL_REGS->NVMCTRL_ADDR = dfu_addr >> 1;
+        NVMCTRL_REGS->NVMCTRL_CTRLB = NVMCTRL_CTRLB_CMDEX_KEY | NVMCTRL_CTRLB_CMD(NVMCTRL_CTRLB_CMD_EB);  // TODO: This erases a block, not a row.
+        while (!(NVMCTRL_REGS->NVMCTRL_STATUS & NVMCTRL_STATUS_READY(1)));
       }
 
       uint16_t *nvm_addr = (uint16_t *)(dfu_addr);
       uint16_t *ram_addr = (uint16_t *)udc_ctrl_out_buf;
       for (unsigned i = 0; i < 32; i++)
         *nvm_addr++ = *ram_addr++;
-      while (!NVMCTRL->INTFLAG.bit.READY);
+      while (!(NVMCTRL_REGS->NVMCTRL_STATUS & NVMCTRL_STATUS_READY(1)));
 
       udc_control_send_zlp();
       dfu_addr = 0;
     }
 
-    USB_REGS->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_TRCPT0;
+    USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPINTFLAG = USB_DEVICE_EPINTFLAG_TRCPT0(1);
   }
 
-  if (USB_REGS->DEVICE.DeviceEndpoint[0].EPINTFLAG.bit.RXSTP) /* Received Setup */
+  if (USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPINTFLAG & USB_DEVICE_EPINTFLAG_RXSTP(1)) /* Received Setup */
   {
-    USB_REGS->DEVICE.DeviceEndpoint[0].EPINTFLAG.reg = USB_DEVICE_EPINTFLAG_RXSTP;
-    USB_REGS->DEVICE.DeviceEndpoint[0].EPSTATUSCLR.bit.BK0RDY = 1;
+    USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPINTFLAG = USB_DEVICE_EPINTFLAG_RXSTP(1);
+    USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPSTATUSCLR = USB_DEVICE_EPSTATUSCLR_BK0RDY(1);
 
     usb_request_t *request = (usb_request_t *)udc_ctrl_out_buf;
     uint8_t type = request->wValue >> 8;
@@ -172,7 +171,7 @@ static void __attribute__((noinline)) USB_Service(void)
           }
           else
           {
-            USB_REGS->DEVICE.DeviceEndpoint[0].EPSTATUSSET.bit.STALLRQ1 = 1;
+            USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPSTATUSSET = USB_DEVICE_EPSTATUSSET_STALLRQ1(1);
           }
           break;
         case USB_GET_CONFIGURATION:
@@ -183,11 +182,11 @@ static void __attribute__((noinline)) USB_Service(void)
           break;
         case USB_SET_FEATURE:
         case USB_CLEAR_FEATURE:
-          USB_REGS->DEVICE.DeviceEndpoint[0].EPSTATUSSET.bit.STALLRQ1 = 1;
+          USB_REGS->DEVICE.DEVICE_ENDPOINT[0].USB_EPSTATUSSET = USB_DEVICE_EPSTATUSSET_STALLRQ1(1);
           break;
         case USB_SET_ADDRESS:
           udc_control_send_zlp();
-          USB_REGS->DEVICE.DADD.reg = USB_DEVICE_DADD_ADDEN | USB_DEVICE_DADD_DADD(request->wValue);
+          USB_REGS->DEVICE.USB_DADD = USB_DEVICE_DADD_ADDEN(1) | USB_DEVICE_DADD_DADD(request->wValue);
           break;
         case USB_SET_CONFIGURATION:
           usb_config = request->wValue;
@@ -215,8 +214,8 @@ static void __attribute__((noinline)) USB_Service(void)
           else
           {
             /* the download has now finished, so now reboot */
-            WDT->CONFIG.reg = WDT_CONFIG_PER_8 | WDT_CONFIG_WINDOW_8;
-            WDT->CTRL.reg = WDT_CTRL_ENABLE;
+            WDT_REGS->WDT_CONFIG = WDT_CONFIG_PER_CYC8 | WDT_CONFIG_WINDOW_CYC8;
+            WDT_REGS->WDT_CTRLA = WDT_CTRLA_ENABLE(1);
           }
 #endif
           /* fall through */
@@ -240,30 +239,30 @@ void bootloader(void)
 {
 #ifndef USE_DBL_TAP
   /* configure PA15 (bootloader entry pin used by SAM-BA) as input pull-up */
-  PORT->Group[0].PINCFG[15].reg = PORT_PINCFG_PULLEN | PORT_PINCFG_INEN;
-  PORT->Group[0].OUTSET.reg = (1UL << 15);
+  PORT_REGS->GROUP[0].PORT_PINCFG[15] = PORT_PINCFG_PULLEN(1) | PORT_PINCFG_INEN(1);
+  PORT_REGS->GROUP[0].PORT_OUTSET = (1UL << 15);
 #endif
 
-  PAC1->WPCLR.reg = 2; /* clear DSU */
+  PAC_REGS->PAC_WRCTRL = PAC_WRCTRL_PERID(ID_DSU) | PAC_WRCTRL_KEY_CLR;
 
-  DSU->ADDR.reg = 0x400; /* start CRC check at beginning of user app */
-  DSU->LENGTH.reg = *(volatile uint32_t *)0x410; /* use length encoded into unused vector address in user app */
+  DSU_REGS->DSU_ADDR = 0x400; /* start CRC check at beginning of user app */
+  DSU_REGS->DSU_LENGTH = *(volatile uint32_t *)0x410; /* use length encoded into unused vector address in user app */
 
   /* ask DSU to compute CRC */
-  DSU->DATA.reg = 0xFFFFFFFF;
-  DSU->CTRL.bit.CRC = 1;
-  while (!DSU->STATUSA.bit.DONE);
+  DSU_REGS->DSU_DATA = 0xFFFFFFFF;
+  DSU_REGS->DSU_CTRL |= DSU_CTRL_CRC(1);
+  while (!(DSU_REGS->DSU_STATUSA & DSU_STATUSA_DONE(1)));
 
-  if (DSU->DATA.reg)
+  if (DSU_REGS->DSU_DATA)
     goto run_bootloader; /* CRC failed, so run bootloader */
 
 #ifndef USE_DBL_TAP
-  if (!(PORT->Group[0].IN.reg & (1UL << 15)))
+  if (!(PORT_REGS->GROUP[0].PORT_IN & (1UL << 15)))
     goto run_bootloader; /* pin grounded, so run bootloader */
 
   return; /* we've checked everything and there is no reason to run the bootloader */
 #else
-  if (PM->RCAUSE.reg & PM_RCAUSE_POR)
+  if (RSTC_REGS->RSTC_RCAUSE & RSTC_RCAUSE_POR(1))
     double_tap = 0; /* a power up event should never be considered a 'double tap' */
   
   if (double_tap == DBL_TAP_MAGIC)
@@ -322,7 +321,9 @@ run_bootloader:
   USB_REGS->DEVICE.USB_CTRLA = USB_CTRLA_SWRST(1);
   while (USB_REGS->DEVICE.USB_SYNCBUSY & USB_SYNCBUSY_SWRST(1));
 
-  USB_REGS->DEVICE.USB_PADCAL = USB_PADCAL_TRANSN( NVM_READ_CAL(NVM_USB_TRANSN) ) | USB_PADCAL_TRANSP( NVM_READ_CAL(NVM_USB_TRANSP) ) | USB_PADCAL_TRIM( NVM_READ_CAL(NVM_USB_TRIM) );
+  USB_REGS->DEVICE.USB_PADCAL = USB_PADCAL_TRANSN( (SW0_FUSES_REGS->FUSES_SW0_WORD_1 & FUSES_SW0_WORD_1_USB_TRANSN_Msk) >> FUSES_SW0_WORD_1_USB_TRANSN_Pos )
+      | USB_PADCAL_TRANSP( (SW0_FUSES_REGS->FUSES_SW0_WORD_1 & FUSES_SW0_WORD_1_USB_TRANSP_Msk) >> FUSES_SW0_WORD_1_USB_TRANSP_Pos )
+      | USB_PADCAL_TRIM( (SW0_FUSES_REGS->FUSES_SW0_WORD_1 & FUSES_SW0_WORD_1_USB_TRIM_Msk) >> FUSES_SW0_WORD_1_USB_TRIM_Pos );
 
   USB_REGS->DEVICE.USB_DESCADD = (uint32_t)udc_mem;
 
